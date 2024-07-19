@@ -2,7 +2,7 @@
 import { useQueryState } from "./UseQueryState";
 import { useDebounceValue } from "./UseDebounceValue";
 import { useRequiredApiKey } from "./useRequiredApiKey"; // Import correct du hook
-
+import { useMovieQuery } from "./useMovieQuery";
 // import {useState, useEffect} from "react";
 
 export default function Home() {
@@ -10,6 +10,7 @@ export default function Home() {
 
   const [query, setQuery] = useQueryState("s", "");
   const debounceQuery = useDebounceValue(query, 500);
+  const {data, error, isLoading} = useMovieQuery(debounceQuery);
 
   return (
     <div className="flex flex-col items-center pt-8">
@@ -41,6 +42,23 @@ export default function Home() {
       </header>
 
       <div className="flex flex-wrap justify-center gap-4 mt-4">
+        <main>
+          {error ? <p>Erro :  {error.message}</p> : null}
+          <div className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {isLoading ? (<p>Loading ...</p>) :null }
+            {data?.Search?.length>0 ? data.Search.map((movie, index) => (
+              <div key={index} className="border p-4 rounded">
+                <h2 className="text-lg font-bold">{movie.Title}</h2>
+                <div className="flex justify-center">
+                <img src={movie.Poster} alt={movie.Title} />
+                </div>
+                <p>Year: {movie.Year}</p>
+                <p>Type: {movie.Type}</p>
+              </div>
+            )) : null
+            }
+          </div>
+        </main>
       </div>
     </div>
   );
